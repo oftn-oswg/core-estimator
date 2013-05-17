@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>JSCore</title>
+</head>
+<body>
+
+	<input type="button" value="Run Core Estimator" id="run" onclick="var o = document.getElementById('output'); o.innerHTML='Running...'; estimateCores(function(cores) { o.innerHTML = 'Best estimate: ' + cores + ' cores'; })"/>
+	<div id="output">Output will be shown in the debugging console.</div>
+<script src="Dataset.js"></script>
+<script src="Estimator.js"></script>
+
+
+</body></html>
