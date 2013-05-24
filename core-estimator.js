@@ -18,7 +18,7 @@
 		return;
 	}
 
-	var performance = performance || Date;
+	var performance = self.performance || Date;
 	var getScriptLocation = function () {
 		var
 		  filename = "fileName"
