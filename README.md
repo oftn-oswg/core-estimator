@@ -5,6 +5,17 @@ Core Estimator is a JavaScript library for the browser which is designed to prov
 
 The estimator works by performing a statistical test on running different numbers of simultaneous web workers. It measures the time it takes to run a single worker and compares this to the time it takes to run an increasing number of workers. As soon as this measurement starts to increase excessively, it has found the maximum number of web workers which can be run simultaneously without degrading performance.
 
+Using Core Estimator
+--------------------
+
+### In a webpage
+
+Include `<script src="/path/to/core-estimator.js#/path/to/workload.js">` in the pages you wish to use the Core Estimator API.
+
+### In a web worker
+
+Run `importScripts("/path/to/core-estimator.js#/path/to/workload.js")`
+
 Future compatibility
 --------------------
 
@@ -15,7 +26,7 @@ API
 ---
 
 <dl>
-	<dt>navigator.getCores(function callback(cores))<dt>
+	<dt>void navigator.getCores(function callback(cores))<dt>
 	<dd>Estimates the number of cores and passes the estimate to the callback. If <code>navigator.cores</code> is is already available (either native API or it was previously estimated), it immediately calls the callback.</dd>
 	<dt>int navigator.cores<dt>
 	<dd>The number of CPU cores the user's device has.</dd>
