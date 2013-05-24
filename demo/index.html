@@ -283,7 +283,7 @@ function run(btn) {
 
 		corelist.set(answer);
 
-		_gaq.push(['_trackEvent', 'core-estimator', 'run', 'Result', answer]);
+		_gaq.push(['_trackEvent', 'core-estimator', 'run', answer + ' cores']);
 
 	}, corelist.update.bind(corelist));
 }
