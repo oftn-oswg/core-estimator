@@ -1,23 +1,279 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>JSCore</title>
+<title>CPU Core Visualization</title>
+<style>
+
+body {
+	font: 16px Helvetica, Arial, Sans-Serif;
+	margin: 0;
+	padding: 0;
+	line-height: 2em;
+	color: rgb(63,63,63);
+	text-rendering: optimizeLegibility;
+}
+h1 {
+	font-weight: normal;
+	color: black;
+}
+a {
+	color: #0099cb;
+	text-decoration: none;
+}
+a:hover { color: inherit; }
+a:active { color: rgb(177,181,185); }
+#cont {
+	margin: 0 auto;
+	margin-top: 5em;
+	width: 920px;
+}
+.core-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	margin-top: 2em;
+}
+.core {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	font-size: 1.5em;
+
+	width: 48px;
+	text-align: center;
+
+	height: 68px;
+	line-height: 68px;
+
+	margin: 0 8px 8px 0;
+	background-color: #535255;
+	color: white;
+
+	border-radius: 3px;
+}
+.core-possible {
+	background-color: #f7d2db;
+	color: black;
+}
+.core-testing {
+	outline: 2px solid red;
+}
+.btn {
+  display: inline-block;
+  *display: inline;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+}
+
+.btn:active,
+.btn.active {
+  background-color: #cccccc \9;
+}
+
+.btn:first-child {
+  *margin-left: 0;
+}
+
+.btn:hover,
+.btn:focus {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+
+.btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.btn.active,
+.btn:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn.disabled,
+.btn[disabled] {
+  cursor: default;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.btn-large {
+  padding: 11px 19px;
+  font-size: 17.5px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+#info {
+	font-style: italic;
+}
+
+</style>
 </head>
 <body>
 
-	<input type="button" value="Run Core Estimator" id="run" onclick="run()"/>
-	<div id="output">Output will be shown in the debugging console.</div>
+<div id="cont">
+<h1>Core Estimator Demo</h1>
+<p>Core Estimator provides only an estimate of the number of cores on your machine. Its result should be taken with a pinch of salt. The value may fluctuate depending on the programs you are currently running, CPU architecture and features, among many other factors. For best results, close as many external programs and tabs as possible.</p>
+<p>See our <a href="http://blog.wg.oftn.org/post/51125082905/core-estimator">blog post</a> for more details on how it works.</p>
+<a href="#" onclick="run(this); return false;" class="btn btn-large">Begin</a>
+<div id="core-list-cont"></div>
+<p id="info"></p>
+</div>
 
 <script src="../core-estimator.js"></script>
+
 <script>
-function run() {
-	var o = document.getElementById('output');
-	o.innerHTML='Running...';
+
+var CoreList = (function() {
+	"use strict";
+
+	function CoreList(parent) {
+		this.min = 1;
+		this.max = 1;
+		this.current = 0;
+
+		this.ol = document.createElement('ol');
+		this.ol.className = 'core-list';
+		parent.appendChild(this.ol);
+	};
+
+	CoreList.prototype.update = function(min, max, current) {
+
+		// In the case where there is no upper
+		// bound, display up min * 2 cores.
+		if (!isFinite(max))
+			max = min * 2;
+
+		for (var i = 1; i <= max + 1; i++) {
+			var core = this.ol.childNodes[i - 1];
+
+			// Remove extra
+			if (i > max) {
+				while (core) {
+					var next = core.nextSibling;
+					this.ol.removeChild(core);
+					core = next;
+				}
+				break;
+			}
+
+			// Create needed
+			if (!core) {
+				core = document.createElement('li');
+				core.appendChild(document.createTextNode(i));
+				this.ol.appendChild(core);
+			}
+
+			// Set properties
+			core.className = "core" + ((i > min) ? ' core-possible' : '') + ((i === current) ? ' core-testing' : '');
+		}
+
+		this.min = min;
+		this.max = max;
+		this.current = current;
+
+	};
+
+	CoreList.prototype.set = function(cores) {
+		this.update(cores, cores, 0);
+	};
+
+	return CoreList;
+}());
+
+var info = document.getElementById('info');
+var running = false;
+var corelist = new CoreList(document.getElementById("core-list-cont"));
+
+function run(btn) {
+	var start;
+
+	if (running) return;
+
+	running = true;
+	start = Date.now();
+
+	btn.classList.add("disabled");
+	btn.innerHTML = "Running...";
+	info.innerHTML = "";
 
 	navigator.getCores(function() {
-		o.innerHTML = 'Best estimate: ' + navigator.cores + ' cores';
-	});
+
+		btn.classList.remove("disabled");
+		btn.innerHTML = "Begin";
+		running = false;
+
+		var seconds = (Date.now() - start) / 1000;
+		var answer = navigator.cores;
+
+		info.innerHTML = "Estimated " +
+			(answer === 1 ? "1 core" : answer + " cores") +
+			" - Took " + seconds + " seconds.";
+
+		corelist.set(answer);
+
+	}, corelist.update.bind(corelist));
 }
+//*/
+
 </script>
+
 </body>
 </html>
