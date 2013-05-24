@@ -26,10 +26,13 @@ navigator.getCores = (function() {
 					var gv_gs = group.uvariance / group.size;
 					var cv_cs = control.uvariance / control.size;
 					var tscore = (group.mean - control.mean) / Math.sqrt(gv_gs + cv_cs);
+					var freedom = Math.pow(gv_gs + cv_cs, 2) /
+						(Math.pow(group.uvariance, 2) / (Math.pow(group.size, 2) * (group.size - 1) ) +
+						Math.pow(control.uvariance, 2) / (Math.pow(control.size, 2) * (control.size - 1))); // don't ask
 
 					console.log(worker_size + " simultaneous workers:", tscore, group);
 
-					report(tscore < 4.604);
+					report(accept(tscore, freedom));
 				}
 			});
 
@@ -205,6 +208,32 @@ navigator.getCores = (function() {
 
 		return stats;
 	};
+
+	/**
+	 * accept(tscore, freedom)
+	 *
+	 * Given a t-score and the number of degrees of freedom,
+	 * return a boolean indicating whether the tscore is less than the
+	 * critical value found in the t-table.
+	 *
+	 **/
+	
+	// This object is created from a t-table given a one-sided test and a 99.5% confidence.
+	var table = {1: 63.66, 2: 9.925, 3: 5.841, 4: 4.604, 5: 4.032, 6: 3.707, 7: 3.499, 8: 3.355, 9: 3.25, 10: 3.169, 11: 3.106, 12: 3.055, 13: 3.012, 14: 2.977, 15: 2.947, 16: 2.921, 17: 2.898, 18: 2.878, 19: 2.861, 20: 2.845, 21: 2.831, 22: 2.819, 23: 2.807, 24: 2.797, 25: 2.787, 26: 2.779, 27: 2.771, 28: 2.763, 29: 2.756, 30: 2.75, 32: 2.738, 34: 2.728, 36: 2.719, 38: 2.712, 40: 2.704, 42: 2.698, 44: 2.692, 46: 2.687, 48: 2.682, 50: 2.678, 55: 2.668, 60: 2.66, 65: 2.654, 70: 2.648, 80: 2.639, 100: 2.626, 150: 2.609, 200: 2.601};
+
+	function accept(tscore, freedom) {
+		var keys = Object.keys(table);
+
+		var key_low = keys.reduce(function(p, c) { if(freedom < c) return p; return c; });
+		var key_high = keys.reduce(function(p, c) { if(freedom > c) return p; return c; });
+
+		var span = key_high - key_low;
+		var critical = linear(table[key_low], table[key_high], (freedom - key_low) / span);
+
+		return tscore < critical;
+	}
+
+	function linear(a, b, t) { return a + (b - a) * t; }
 
 	return get;
 }());
