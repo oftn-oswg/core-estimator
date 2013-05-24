@@ -177,6 +177,20 @@ a:active { color: rgb(177,181,185); }
 <p id="info"></p>
 </div>
 
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20491376-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
 <script src="../core-estimator.js"></script>
 
 <script>
@@ -268,6 +282,8 @@ function run(btn) {
 			" - Took " + seconds + " seconds.";
 
 		corelist.set(answer);
+
+		_gaq.push(['_trackEvent', 'core-estimator', 'run', 'Result', answer]);
 
 	}, corelist.update.bind(corelist));
 }
