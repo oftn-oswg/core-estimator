@@ -1,11 +1,11 @@
 navigator.getCores = (function() {
 	"use strict";
 
-	function accept(t_score) {
-		return t_score < 4.604;
-	}
-
-	function estimateCores(_continue) {
+	/**
+	 * Our main getCores function.
+	 * Usage: navigator.getCores(function() { alert(navigator.cores); });
+	 **/
+	function get(_continue) {
 		var workers = []; // An array of workers ready to run the payload
 
 		var worker_size = 1;
@@ -13,9 +13,9 @@ navigator.getCores = (function() {
 
 		iterate(function(worker_size, report) {
 
-			measure(workers, worker_size, 5, function(group) {
+			measure(workers, worker_size, 5, function(data) {
 
-				group.analyse();
+				var group = analyse(data);
 
 				if (worker_size === 1) {
 					console.log("1 worker (control group):", group);
@@ -23,11 +23,13 @@ navigator.getCores = (function() {
 
 					report(true);
 				} else {
-					var t_score = (group.mean - control.mean) /
-						Math.sqrt(group.unbiased_variance / group.size + control.unbiased_variance / control.size);
-					console.log(worker_size + " simultaneous workers:", t_score, group);
+					var gv_gs = group.uvariance / group.size;
+					var cv_cs = control.uvariance / control.size;
+					var tscore = (group.mean - control.mean) / Math.sqrt(gv_gs + cv_cs);
 
-					report(accept(t_score));
+					console.log(worker_size + " simultaneous workers:", tscore, group);
+
+					report(tscore < 4.604);
 				}
 			});
 
@@ -45,8 +47,16 @@ navigator.getCores = (function() {
 		});
 	}
 
+	/**
+	 * measure()
+	 *
+	 * Given a set of workers and a sample size,
+	 * it calls back with an array of times it took
+	 * to run all the workers simultaneously.
+	 *
+	 **/
 	function measure(workers, worker_size, sample_size, _continue) {
-		var samples = new Dataset();
+		var samples = [];
 
 		// Guarantee that we have enough workers
 		for (var i = workers.length; i < worker_size; i++) {
@@ -62,7 +72,7 @@ navigator.getCores = (function() {
 					left--;
 					if (!left) {
 						sample_size--;
-						samples.add(Date.now() - begin);
+						samples.push(Date.now() - begin);
 						if (sample_size) {
 							_repeat();
 						} else {
@@ -87,6 +97,14 @@ navigator.getCores = (function() {
 	}
 
 
+	/**
+	 * iterate(test, answer)
+	 *
+	 * Given a test function and a callback,
+	 * it will conduct a binary search to find the highest value
+	 * which the test function returns as passing.
+	 *
+	 **/
 	function iterate(test, answer) {
 		// Let S be the set of possible core numbers on this machine.
 		// S = {x \in N | x != 0 }.
@@ -141,6 +159,52 @@ navigator.getCores = (function() {
 		}
 	}
 
+	/**
+	 * analyse(array)
+	 *
+	 * Given an array of values, it returns a set of statistics.
+	 *
+	 **/
+	function analyse(data) {
+		// If we have no values, return null.
+		var len = data.length;
+		if (!len) return null;
 
-	return estimateCores;
+		// Iterate through data, gathering information.
+		var min = 1/0, max = -1/0;
+		var sum = 0;
+		var sum_squared_datum = 0;
+		for (var i = 0; i < len; i++) {
+			var datum = data[i];
+			if (datum < min) min = datum;
+			if (datum > max) max = datum;
+			sum += datum;
+			sum_squared_datum += Math.pow(datum, 2);
+		}
+
+		// Calculate statistics from information.
+		var mean = sum / len;
+		var mean_squared = Math.pow(mean, 2);
+		var variance = 0;
+		var unbiased_variance = 0;
+
+		if (len > 1) {
+			variance = sum_squared_datum / len - mean_squared;
+			unbiased_variance = (sum_squared_datum - len * mean_squared) / (len - 1);
+		}
+
+		// Store statistics into object
+		var stats = {
+			size: len,
+			min: min,
+			max: max,
+			mean: mean,
+			variance: variance,
+			uvariance: unbiased_variance
+		};
+
+		return stats;
+	};
+
+	return get;
 }());
