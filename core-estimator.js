@@ -5,7 +5,7 @@ navigator.getCores = (function() {
 	 * Our main getCores function.
 	 * Usage: navigator.getCores(function() { alert(navigator.cores); });
 	 **/
-	function get(_continue) {
+	function get(_continue, progress) {
 		var workers = []; // An array of workers ready to run the payload
 
 		var worker_size = 1;
@@ -47,7 +47,7 @@ navigator.getCores = (function() {
 			navigator.cores = cores;
 			_continue();
 
-		});
+		}, progress);
 	}
 
 	/**
@@ -101,22 +101,28 @@ navigator.getCores = (function() {
 
 
 	/**
-	 * iterate(test, answer)
+	 * iterate(test, answer, progress)
 	 *
 	 * Given a test function and a callback,
 	 * it will conduct a binary search to find the highest value
 	 * which the test function returns as passing.
 	 *
+	 * Optionally takes a callback to report the state of the iterator.
+	 *
 	 **/
-	function iterate(test, answer) {
+	function iterate(test, answer, progress) {
 		// Let S be the set of possible core numbers on this machine.
 		// S = {x \in N | x != 0 }.
 
-		var min, max;
+		var min = 1, max = 1/0;
 
 		// Find an upper bound (max - 1) on S by testing powers of two.
 		// During these tests, we also come across a lower bound (min).
 		(function repeat(cores) {
+
+			if (progress)
+				progress(min, max, cores);
+
 			test(cores, function(pass) {
 				if (pass) {
 					min = cores;
@@ -141,6 +147,10 @@ navigator.getCores = (function() {
 		}(1));
 
 		function search(center, pivot) {
+
+			if (progress)
+				progress(min, max, center);
+
 			test(center, function(pass) {
 				if (pass) {
 					min = center;
