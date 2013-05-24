@@ -18,7 +18,6 @@ navigator.getCores = (function() {
 				var group = analyse(data);
 
 				if (worker_size === 1) {
-					console.log("1 worker (control group):", group);
 					control = group;
 
 					report(true);
@@ -29,8 +28,6 @@ navigator.getCores = (function() {
 					var freedom = Math.pow(gv_gs + cv_cs, 2) /
 						(Math.pow(group.uvariance, 2) / (Math.pow(group.size, 2) * (group.size - 1) ) +
 						Math.pow(control.uvariance, 2) / (Math.pow(control.size, 2) * (control.size - 1))); // don't ask
-
-					console.log(worker_size + " simultaneous workers:", tscore, group);
 
 					report(accept(tscore, freedom));
 				}
