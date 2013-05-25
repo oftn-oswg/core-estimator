@@ -36,7 +36,6 @@
 			} else if (stacktrace in ex) { // Opera
 				ex[stacktrace].replace(/Line \d+ of .+ script (.*)/gm, matcher);
 			} else if (stack in ex) { // WebKit, Blink, and IE10
-				console.log(ex.stack);
 				ex[stack].replace(/at.*?\(?(\S+):\d+:\d+\)?$/g, matcher);
 			}
 			return loc;
@@ -53,18 +52,20 @@
 
 		var worker_size = 1;
 		var control;
+		var controldata = [];
 
 		iterate(function(worker_size, report) {
 
 			measure(workers, worker_size, 5, function(data) {
 
-				var group = analyse(data);
-
 				if (worker_size === 1) {
-					control = group;
+					Array.prototype.push.apply(controldata, data);
+					control = analyse(controldata);
 
 					report(true);
 				} else {
+					var group = analyse(data);
+
 					var gv_gs = group.uvariance / group.size;
 					var cv_cs = control.uvariance / control.size;
 					var tscore = (group.mean - control.mean) / Math.sqrt(gv_gs + cv_cs);
@@ -163,51 +164,55 @@
 			if (progress)
 				progress(min, max, cores);
 
-			test(cores, function(pass) {
-				if (pass) {
-					min = cores;
+			test(1, function() {
+				test(cores, function(pass) {
+					if (pass) {
+						min = cores;
 
-					// Repeat the test with double the cores.
-					repeat(2 * cores);
-				} else {
-					max = cores;
+						// Repeat the test with double the cores.
+						repeat(2 * cores);
+					} else {
+						max = cores;
 
-					// * If S has one element, we found the number
-					// * S has one element iff max - min = 1.
-					// * Given max = min * 2 in invariant of this test,
-					//       S has one element iff min = 1.
-					if (min === 1) {
-						return answer(min);
+						// * If S has one element, we found the number
+						// * S has one element iff max - min = 1.
+						// * Given max = min * 2 in invariant of this test,
+						//       S has one element iff min = 1.
+						if (min === 1) {
+							return answer(min);
+						}
+
+						// We have finally found our upper bound; search space.
+						search(min * 3 / 2, min / 4);
 					}
-
-					// We have finally found our upper bound; search space.
-					search(min * 3 / 2, min / 4);
-				}
+				});
 			});
-		}(1));
+		}(2));
 
 		function search(center, pivot) {
 
 			if (progress)
 				progress(min, max, center);
 
-			test(center, function(pass) {
-				if (pass) {
-					min = center;
-					center += pivot;
-				} else {
-					max = center;
-					center -= pivot;
-				}
-				if (max - min === 1)
-					return answer(min);
+			test(1, function() {
+				test(center, function(pass) {
+					if (pass) {
+						min = center;
+						center += pivot;
+					} else {
+						max = center;
+						center -= pivot;
+					}
+					if (max - min === 1)
+						return answer(min);
 
-				if (!pivot) {
-					// This means we haven't found an answer.
-					// Oh well. Answer with the upper bound.
-					return answer(max - 1);
-				}
-				search(center, pivot >> 1);
+					if (!pivot) {
+						// This means we haven't found an answer.
+						// Oh well. Answer with the upper bound.
+						return answer(max - 1);
+					}
+					search(center, pivot >> 1);
+				});
 			});
 		}
 	}
@@ -249,10 +254,10 @@
 		// Store statistics into object
 		var stats = {
 			size: len,
-			min: min,
-			max: max,
+			//min: min,
+			//max: max,
 			mean: mean,
-			variance: variance,
+			//variance: variance,
 			uvariance: unbiased_variance
 		};
 
