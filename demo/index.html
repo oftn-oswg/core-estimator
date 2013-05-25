@@ -283,9 +283,37 @@ function run(btn) {
 
 		corelist.set(answer);
 
+		var feedback = document.createElement("p");
+		feedback.appendChild(document.createTextNode("Was this result accurate within 1-2 cores? "));
+
+		var yes = document.createElement("a");
+		yes.href = "#";
+		yes.appendChild(document.createTextNode("Yes"));
+		yes.onclick = function() { sendFeedback(feedback, true); return false; };
+
+		var no = document.createElement("a");
+		no.href = "#";
+		no.appendChild(document.createTextNode("No"));
+		no.onclick = function() { sendFeedback(feedback, false); return false; };
+
+		feedback.appendChild(yes);
+		feedback.appendChild(document.createTextNode(" / "));
+		feedback.appendChild(no);
+
+		info.appendChild(feedback);
+
 		_gaq.push(['_trackEvent', 'core-estimator', 'run', answer + ' cores']);
 
 	}, corelist.update.bind(corelist));
+
+	function sendFeedback(parent, accurate) {
+		while (parent.lastChild)
+			parent.removeChild(parent.lastChild);
+
+		parent.appendChild(document.createTextNode("Thank you for your feedback!"));
+
+		_gaq.push(['_trackEvent', 'core-estimator', 'feedback', 'Accurate ±2 ?', +accurate]);
+	}
 }
 //*/
 
