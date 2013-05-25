@@ -1,11 +1,54 @@
-navigator.getCores = (function() {
+/* Core Estimator
+ * CPU core estimation timing attack using web workers
+ * 2013-05-24
+ * 
+ * Copyright ΩF:∅ Working Group contributors
+ * License: X11/MIT
+ *   See LICENSE.md
+ */
+
+(function() {
 	"use strict";
+
+	// native support for navigator.cores
+	if (navigator.cores) {
+		navigator.getCores = function(callback) {
+			callback(navigator.cores);
+		};
+		return;
+	}
+
+	var performance = self.performance || Date;
+	var getScriptLocation = function () {
+		var
+		  filename = "fileName"
+		, stack = "stack"
+		, stacktrace = stack + "trace"
+		, loc
+		, matcher = function (stack, matchedLoc) {
+			loc = matchedLoc;
+		}
+		;
+
+		try { 0(); } catch (ex) {
+			if (filename in ex) { // Firefox
+				loc = ex[filename];
+			} else if (stacktrace in ex) { // Opera
+				ex[stacktrace].replace(/Line \d+ of .+ script (.*)/gm, matcher);
+			} else if (stack in ex) { // WebKit, Blink, and IE10
+				console.log(ex.stack);
+				ex[stack].replace(/at.*?\(?(\S+):\d+:\d+\)?$/g, matcher);
+			}
+			return loc;
+		}
+	};
+	var workload = getScriptLocation().split("#")[1];
 
 	/**
 	 * Our main getCores function.
 	 * Usage: navigator.getCores(function() { alert(navigator.cores); });
 	 **/
-	function get(_continue, progress) {
+	navigator.getCores = function get(_continue, progress) {
 		var workers = []; // An array of workers ready to run the payload
 
 		var worker_size = 1;
@@ -42,7 +85,7 @@ navigator.getCores = (function() {
 
 			// We found an estimate
 			navigator.cores = cores;
-			_continue();
+			_continue(cores);
 
 		}, progress);
 	}
@@ -60,7 +103,7 @@ navigator.getCores = (function() {
 
 		// Guarantee that we have enough workers
 		for (var i = workers.length; i < worker_size; i++) {
-			workers.push(new Worker("../workload.js"));
+			workers.push(new Worker(workload));
 		}
 
 		loop(function(_repeat) {
@@ -72,7 +115,7 @@ navigator.getCores = (function() {
 					left--;
 					if (!left) {
 						sample_size--;
-						samples.push(Date.now() - begin);
+						samples.push(performance.now() - begin);
 						if (sample_size) {
 							_repeat();
 						} else {
@@ -86,7 +129,7 @@ navigator.getCores = (function() {
 			for (var i = 0; i < worker_size; i++) {
 				workers[i].postMessage(null);
 			}
-			begin = Date.now();
+			begin = performance.now();
 		});
 	}
 
@@ -241,6 +284,4 @@ navigator.getCores = (function() {
 	}
 
 	function linear(a, b, t) { return a + (b - a) * t; }
-
-	return get;
 }());
