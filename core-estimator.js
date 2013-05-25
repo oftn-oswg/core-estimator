@@ -19,7 +19,7 @@
 	}
 
 	var performance = self.performance || Date;
-	var getScriptLocation = function () {
+	var script_location = (function () {
 		var
 		  filename = "fileName"
 		, stack = "stack"
@@ -33,15 +33,21 @@
 		try { 0(); } catch (ex) {
 			if (filename in ex) { // Firefox
 				loc = ex[filename];
-			} else if (stacktrace in ex) { // Opera
+			} else if (stacktrace in ex) { // Old Opera
 				ex[stacktrace].replace(/Line \d+ of .+ script (.*)/gm, matcher);
 			} else if (stack in ex) { // WebKit, Blink, and IE10
 				ex[stack].replace(/at.*?\(?(\S+):\d+:\d+\)?$/g, matcher);
 			}
 			return loc;
 		}
-	};
-	var workload = getScriptLocation().split("#")[1];
+	}());
+
+	if (!script_location) {
+		console.error("Your browser does not currently support Core Estimator.");
+		return;
+	}
+
+	var workload = script_location.replace(/\/[^\/]+$/, "/workload.js");
 
 	/**
 	 * Our main getCores function.

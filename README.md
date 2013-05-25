@@ -8,13 +8,15 @@ The estimator works by performing a statistical test on running different number
 Using Core Estimator
 --------------------
 
+To install, place `core-estimator.js` and `workload.js` in the same public directory.
+
 ### In a webpage
 
-Include `<script src="/path/to/core-estimator.js#/path/to/workload.js">` in the pages you wish to use the Core Estimator API.
+Include `<script src="/path/to/core-estimator.js">` in the pages you wish to use the Core Estimator API.
 
 ### In a web worker
 
-Run `importScripts("/path/to/core-estimator.js#/path/to/workload.js")`
+Run `importScripts("/path/to/core-estimator.js")`
 
 Future compatibility
 --------------------
