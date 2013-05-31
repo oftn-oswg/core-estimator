@@ -25,7 +25,7 @@ Supported Browsers
 * Chrome
 * Internet Explorer 10
 * Safari
-* Opera
+* Opera (Blink)
 
 Future compatibility
 --------------------
