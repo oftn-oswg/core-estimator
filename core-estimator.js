@@ -33,8 +33,8 @@
 		try { 0(); } catch (ex) {
 			if (filename in ex) { // Firefox
 				loc = ex[filename];
-			} else if (stacktrace in ex) { // Old Opera
-				ex[stacktrace].replace(/Line \d+ of .+ script (.*)/gm, matcher);
+			} else if (stacktrace in ex) { // Opera
+				ex[stacktrace].replace(/called from line \d+, column \d+ in (.*):/gm, matcher);
 			} else if (stack in ex) { // WebKit, Blink, and IE10
 				ex[stack].replace(/at.*?\(?(\S+):\d+:\d+\)?$/g, matcher);
 			}
