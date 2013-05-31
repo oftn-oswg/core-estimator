@@ -18,6 +18,15 @@ Include `<script src="/path/to/core-estimator.js">` in the pages you wish to use
 
 Run `importScripts("/path/to/core-estimator.js")`
 
+Supported Browsers
+------------------
+
+* Firefox
+* Chrome
+* Internet Explorer 10
+* Safari
+* Opera
+
 Future compatibility
 --------------------
 
