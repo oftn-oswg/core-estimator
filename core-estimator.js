@@ -1,4 +1,5 @@
-/* Core Estimator
+/** @preserve
+ * Core Estimator
  * CPU core estimation timing attack using web workers
  * 2013-06-01
  * 
@@ -9,14 +10,6 @@
 
 (function() {
 	"use strict";
-
-	// Native support for navigator.cores
-	if (navigator.cores) {
-		navigator.getCores = function(callback) {
-			callback(navigator.cores);
-		};
-		return;
-	}
 
 	// Set up performance testing function
 	var performance = self.performance || Date;
@@ -29,7 +22,7 @@
 	}
 
 	// Get the location of the currently running script
-	var script_location = (function () {
+	var path = (function () {
 		var
 		  filename = "fileName"
 		, stack = "stack"
@@ -48,23 +41,44 @@
 			} else if (stack in ex) { // WebKit, Blink, and IE10
 				ex[stack].replace(/at.*?\(?(\S+):\d+:\d+\)?$/g, matcher);
 			}
+			if (!loc) {
+				throw new Error("Your browser does not currently support Core Estimator.");
+			}
 			return loc;
 		}
 	}());
 
-	if (!script_location) {
-		throw "Your browser does not currently support Core Estimator.";
-	}
+	// Path to workload.js is derived from the path of the running script.
+	var workload = path.replace(/\/[^\/]+$/, "/workload.js");
 
-	var workload = script_location.replace(/\/[^\/]+$/, "/workload.js");
+	var dom_implemented = !!navigator.cores;
+	var previously_run = false;
+
+	// Set navigator.cores to a sane value before getCores is ever run
+	if (!dom_implemented) {
+		/** @expose */ navigator.cores = 1;
+	}
 
 	/**
 	 * navigator.getCores(callback)
 	 *
 	 * Performs the statistical test to determine the correct number of cores
 	 * and calls its callback with the core number as its argument.
+	 *
+	 * @expose
 	 **/
-	navigator.getCores = function get(_continue, progress) {
+	navigator.getCores = function(_continue, options) {
+		options = options || {};
+		if (!('use_cache' in options)) {
+			options['use_cache'] = true;
+		}
+
+		// If we already have an answer, return early.
+		if (dom_implemented || (options['use_cache'] && previously_run)) {
+			_continue(navigator.cores);
+			return;
+		}
+
 		var workers = []; // An array of workers ready to run the payload
 
 		var worker_size = 1;
@@ -103,9 +117,10 @@
 
 			// We found an estimate
 			navigator.cores = cores;
+			previously_run = true;
 			_continue(cores);
 
-		}, progress);
+		}, options['progress']);
 	}
 
 	/**
@@ -294,7 +309,7 @@
 	 **/
 	
 	// This object is created from a t-table given a one-sided test and a 99.5% confidence.
-	var table = {1: 63.66, 2: 9.925, 3: 5.841, 4: 4.604, 5: 4.032, 6: 3.707, 7: 3.499, 8: 3.355, 9: 3.25, 10: 3.169, 11: 3.106, 12: 3.055, 13: 3.012, 14: 2.977, 15: 2.947, 16: 2.921, 17: 2.898, 18: 2.878, 19: 2.861, 20: 2.845, 21: 2.831, 22: 2.819, 23: 2.807, 24: 2.797, 25: 2.787, 26: 2.779, 27: 2.771, 28: 2.763, 29: 2.756, 30: 2.75, 32: 2.738, 34: 2.728, 36: 2.719, 38: 2.712, 40: 2.704, 42: 2.698, 44: 2.692, 46: 2.687, 48: 2.682, 50: 2.678, 55: 2.668, 60: 2.66, 65: 2.654, 70: 2.648, 80: 2.639, 100: 2.626, 150: 2.609, 200: 2.601};
+	/** @const */ var table = {1: 63.66, 2: 9.925, 3: 5.841, 4: 4.604, 5: 4.032, 6: 3.707, 7: 3.499, 8: 3.355, 9: 3.25, 10: 3.169, 11: 3.106, 12: 3.055, 13: 3.012, 14: 2.977, 15: 2.947, 16: 2.921, 17: 2.898, 18: 2.878, 19: 2.861, 20: 2.845, 21: 2.831, 22: 2.819, 23: 2.807, 24: 2.797, 25: 2.787, 26: 2.779, 27: 2.771, 28: 2.763, 29: 2.756, 30: 2.75, 32: 2.738, 34: 2.728, 36: 2.719, 38: 2.712, 40: 2.704, 42: 2.698, 44: 2.692, 46: 2.687, 48: 2.682, 50: 2.678, 55: 2.668, 60: 2.66, 65: 2.654, 70: 2.648, 80: 2.639, 100: 2.626, 150: 2.609, 200: 2.601};
 
 	function accept(tscore, freedom) {
 		var keys = Object.keys(table);
