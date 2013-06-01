@@ -10,7 +10,7 @@
 (function() {
 	"use strict";
 
-	// native support for navigator.cores
+	// Native support for navigator.cores
 	if (navigator.cores) {
 		navigator.getCores = function(callback) {
 			callback(navigator.cores);
@@ -18,12 +18,17 @@
 		return;
 	}
 
+	// Set up performance testing function
 	var performance = self.performance || Date;
-	
 	if (!performance.now) {
-		performance = Date;
+		if (performance.webkitNow) {
+			performance.now = performance.webkitNow;
+		} else {
+			performance = Date;
+		}
 	}
-	
+
+	// Get the location of the currently running script
 	var script_location = (function () {
 		var
 		  filename = "fileName"
@@ -54,8 +59,10 @@
 	var workload = script_location.replace(/\/[^\/]+$/, "/workload.js");
 
 	/**
-	 * Our main getCores function.
-	 * Usage: navigator.getCores(function() { alert(navigator.cores); });
+	 * navigator.getCores(callback)
+	 *
+	 * Performs the statistical test to determine the correct number of cores
+	 * and calls its callback with the core number as its argument.
 	 **/
 	navigator.getCores = function get(_continue, progress) {
 		var workers = []; // An array of workers ready to run the payload
