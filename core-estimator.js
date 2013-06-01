@@ -1,6 +1,6 @@
 /* Core Estimator
  * CPU core estimation timing attack using web workers
- * 2013-05-24
+ * 2013-06-01
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -19,6 +19,11 @@
 	}
 
 	var performance = self.performance || Date;
+	
+	if (!performance.now) {
+		performance = Date;
+	}
+	
 	var script_location = (function () {
 		var
 		  filename = "fileName"
@@ -43,8 +48,7 @@
 	}());
 
 	if (!script_location) {
-		console.error("Your browser does not currently support Core Estimator.");
-		return;
+		throw "Your browser does not currently support Core Estimator.";
 	}
 
 	var workload = script_location.replace(/\/[^\/]+$/, "/workload.js");
@@ -167,9 +171,9 @@
 		// During these tests, we also come across a lower bound (min).
 		(function repeat(cores) {
 
-			if (progress)
+			if (progress) {
 				progress(min, max, cores);
-
+			}
 			test(1, function() {
 				test(cores, function(pass) {
 					if (pass) {
@@ -197,8 +201,9 @@
 
 		function search(center, pivot) {
 
-			if (progress)
+			if (progress) {
 				progress(min, max, center);
+			}
 
 			test(1, function() {
 				test(center, function(pass) {
@@ -209,9 +214,9 @@
 						max = center;
 						center -= pivot;
 					}
-					if (max - min === 1)
+					if (max - min === 1) {
 						return answer(min);
-
+					}
 					if (!pivot) {
 						// This means we haven't found an answer.
 						// Oh well. Answer with the upper bound.
@@ -232,7 +237,9 @@
 	function analyse(data) {
 		// If we have no values, return null.
 		var len = data.length;
-		if (!len) return null;
+		if (!len) {
+			return null;
+		}
 
 		// Iterate through data, gathering information.
 		var min = 1/0, max = -1/0;
