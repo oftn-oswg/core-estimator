@@ -1,4 +1,4 @@
-/** @preserve
+/*
  * Core Estimator
  * CPU core estimation timing attack using web workers
  * 2013-06-01
@@ -7,6 +7,8 @@
  * License: X11/MIT
  *   See LICENSE.md
  */
+
+/*! @source https://github.com/oftn/core-estimator/blob/master/core-estimator.js */
 
 (function() {
 	"use strict";
