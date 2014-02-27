@@ -1,7 +1,7 @@
 /*
  * Core Estimator
  * CPU core estimation timing attack using web workers
- * 2013-06-01
+ * 2014-02-27
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -19,7 +19,7 @@
 		if (performance.webkitNow) {
 			performance.now = performance.webkitNow;
 		} else {
-			performance = Date;
+			performance.now = function() { return +new Date; };
 		}
 	}
 
