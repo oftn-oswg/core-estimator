@@ -12,7 +12,7 @@ To install, place `core-estimator.js` and `workload.js` in the same public direc
 
 ### In a webpage
 
-Include `<script src="/path/to/core-estimator.js">` in the pages you wish to use the Core Estimator API.
+Include `<script src="/path/to/core-estimator.js"></script>` in the pages you wish to use the Core Estimator API.
 
 ### In a web worker
 
