@@ -59,6 +59,10 @@
 	// Set navigator.cores to a sane value before getCores is ever run
 	if (!dom_implemented) {
 		/** @expose */ navigator.cores = 1;
+		if (typeof Worker === "undefined") {
+			// Web workers not supported, effectively single-core
+			dom_implemented = true;
+		}
 	}
 
 	/**
