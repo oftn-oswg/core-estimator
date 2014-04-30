@@ -5,7 +5,11 @@ Core Estimator is a JavaScript library for the browser which is designed to prov
 
 The estimator works by performing a statistical test on running different numbers of simultaneous web workers. It measures the time it takes to run a single worker and compares this to the time it takes to run an increasing number of workers. As soon as this measurement starts to increase excessively, it has found the maximum number of web workers which can be run simultaneously without degrading performance.
 
-###[Try demo](http://wg.oftn.org/projects/core-estimator/demo/)
+
+[Live Demo](http://wg.oftn.org/projects/core-estimator/demo/)
+-----------
+
+Core Estimator provides only an estimate of the number of cores on your machine. The value may fluctuate depending on the programs you are currently running, CPU architecture and features, among many other factors. For the most accurate results, close as many external programs and tabs as possible before running the demo.
 
 Using Core Estimator
 --------------------
