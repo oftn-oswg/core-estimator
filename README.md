@@ -9,7 +9,7 @@ The estimator works by performing a statistical test on running different number
 [Live Demo](http://wg.oftn.org/projects/core-estimator/demo/)
 -----------
 
-Core Estimator provides only an estimate of the number of cores on your machine. The value may fluctuate depending on the programs you are currently running, CPU architecture and features, among many other factors. For the most accurate results, close as many external programs and tabs as possible before running the demo.
+Core Estimator only provides an estimate of the number of cores on your machine. The value may fluctuate depending on the programs you are currently running, CPU architecture and features, among many other factors. For the most accurate results, close as many external programs and tabs as possible before running the demo.
 
 Using Core Estimator
 --------------------
