@@ -1,7 +1,7 @@
 /*
  * Core Estimator
  * CPU core estimation timing attack using web workers
- * 2014-02-27
+ * 2014-04-29
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -10,9 +10,9 @@
 
 /*! @source https://github.com/oftn/core-estimator/blob/master/core-estimator.js */
 
-(function() {
-	"use strict";
+"use strict";
 
+(function() {
 	// Set up performance testing function
 	var performance = self.performance || Date;
 	if (!performance.now) {
