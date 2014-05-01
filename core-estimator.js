@@ -1,7 +1,7 @@
 /*
  * Core Estimator
  * CPU core estimation timing attack using web workers
- * 2014-04-29
+ * 2014-04-30
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -13,6 +13,10 @@
 "use strict";
 
 (function() {
+	// Configuration
+	var SAMPLES = 5;
+	var WORKLOAD = 0x1800000;
+
 	// Set up performance testing function
 	var performance = self.performance || Date;
 	if (!performance.now) {
@@ -93,7 +97,7 @@
 
 		iterate(function(worker_size, report) {
 
-			measure(workers, worker_size, 5, function(data) {
+			measure(workers, worker_size, SAMPLES, function(data) {
 
 				if (worker_size === 1) {
 					Array.prototype.push.apply(controldata, data);
@@ -166,7 +170,7 @@
 
 			// Kick-off our workers and start the clock
 			for (var i = 0; i < worker_size; i++) {
-				workers[i].postMessage(null);
+				workers[i].postMessage(WORKLOAD);
 			}
 			begin = performance.now();
 		});
