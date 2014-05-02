@@ -30,8 +30,7 @@ Supported browsers
 * Firefox
 * Chrome
 * Safari
-* Internet Explorer 10
-* [Not Internet Explorer 11](https://github.com/oftn/core-estimator/issues/4)
+* Internet Explorer 10+
 * Opera (Blink)
 
 Future compatibility
