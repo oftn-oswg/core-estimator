@@ -14,8 +14,8 @@
 
 (function() {
 	// Configuration
-	var SAMPLES = 5;
-	var WORKLOAD = 0x1800000;
+	var SAMPLES = 25;
+	var WORKLOAD = 0x350000;
 
 	// Set up performance testing function
 	var performance = self.performance || Date;
