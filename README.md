@@ -33,8 +33,8 @@ Supported browsers
 * Internet Explorer 10+
 * Opera (Blink)
 
-Future compatibility
---------------------
+Forward compatibility
+---------------------
 
 In the future, when browser vendors implement `navigator.cores` natively, Core Estimator will automatically detect and use the native method instead of estimating the number of cores.
 
