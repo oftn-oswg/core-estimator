@@ -13,9 +13,11 @@
 "use strict";
 
 (function() {
-	// Configuration
+	// Configuration (default: medium accuracy)
 	var SAMPLES = 20;
 	var WORKLOAD = 0x400000;
+	// A workload of 0x2000000 with 15-20 samples should give you medium-high accuracy
+	// at 6-8x the default runtime. Not suggested in production webapps!
 
 	// Set up performance testing function
 	var performance = self.performance || Date;
