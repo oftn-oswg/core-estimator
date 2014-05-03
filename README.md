@@ -46,5 +46,5 @@ API
 	<dt>void navigator.getCores(function callback(cores))<dt>
 	<dd>Estimates the number of cores and passes the estimate to the callback. If <code>navigator.cores</code> is is already available (either native API or it was previously estimated), it immediately calls the callback.</dd>
 	<dt>int navigator.cores<dt>
-	<dd>The number of CPU cores the user's device has.</dd>
+	<dd>The number of CPU cores the user's device has. If the browser does not natively support navigator.cores, this will only be available after running navigator.getCores().</dd>
 </dl>
