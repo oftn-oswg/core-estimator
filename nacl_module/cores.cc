@@ -7,10 +7,6 @@
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/var.h"
 
-#ifdef WIN32
-#undef PostMessage
-#endif
-
 
 class CoresInstance : public pp::Instance {
 public:
