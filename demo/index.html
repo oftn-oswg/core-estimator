@@ -172,22 +172,24 @@ a:active { color: rgb(177,181,185); }
 <h1>Core Estimator Demo</h1>
 <p>Core Estimator only provides an estimate of the number of cores on your machine. The value may fluctuate depending on the system load caused by other programs currently running. For the most accurate results, close as many external programs and tabs as possible.</p>
 <p>See our <a href="http://blog.wg.oftn.org/post/51125082905/core-estimator">blog post</a> or <a href="https://github.com/oftn/core-estimator/blob/master/core-estimator.js">read the code</a> for more details on how it works.</p>
-<a href="#" onclick="run(this); return false;" class="btn btn-large">Begin</a>
+<a href="#" onclick="run(this); return false;" class="btn btn-large" id="button">Begin</a>
 <div id="core-list-cont"></div>
 <p id="info"></p>
 </div>
 
 <script type="application/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-20491376-1']);
-  _gaq.push(['_trackPageview']);
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-20491376-1']);
+_gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+(function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+var dom_implemented = navigator.hardwareConcurrency;
 
 </script>
 
@@ -321,6 +323,10 @@ function run(btn) {
 	}
 }
 //*/
+
+if (dom_implemented || navigator.mimeTypes["application/x-pnacl"]) {
+	run(document.getElementById("button"));
+}
 
 </script>
 
