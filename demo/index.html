@@ -273,14 +273,14 @@ function run(btn) {
 		use_cache: false
 	};
 
-	navigator.getCores(function() {
+	navigator.getHardwareConcurrency(function() {
 
 		btn.classList.remove("disabled");
 		btn.innerHTML = "Begin";
 		running = false;
 
 		var seconds = (Date.now() - start) / 1000;
-		var answer = navigator.cores;
+		var answer = navigator.hardwareConcurrency;
 
 		info.innerHTML = "Estimated " +
 			(answer === 1 ? "1 core" : answer + " cores") +

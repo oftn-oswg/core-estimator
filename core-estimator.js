@@ -1,7 +1,8 @@
 /*
  * Core Estimator
  * CPU core estimation timing attack using web workers
- * 2014-05-01
+ * A polyfill for navigator.hardwareConcurrency
+ * 2014-05-08
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -19,6 +20,58 @@
 	// A workload of 0x2000000 with 15-20 samples should give you medium-high accuracy
 	// at 6-8x the default runtime. Not suggested in production webapps!
 
+	var dom_implemented = navigator.hardwareConcurrency;
+
+	// Get the path of the currently running script
+	var path = (document.currentScript || document.scripts[document.scripts.length-1]).src
+		.replace(/\/[^\/]+$/, "/");
+
+	// Use PNaCl in Chrome
+	if (!dom_implemented && navigator.mimeTypes["application/x-pnacl"]) {
+		var HTML = "http://www.w3.org/1999/xhtml";
+		var log_error = console.error.bind(console);
+		var calls = [];
+		var pnacl_finished;
+		var on_message = function(event) {
+			var cores = navigator.hardwareConcurrency = event.data;
+			var call;
+
+			navigator.getHardwareConcurrency = function(callback, options) {
+				callback(cores);
+				if (options.progress) {
+					options.progress(cores, cores, cores);
+				}
+			};
+
+			while (call = calls.shift()) {
+				navigator.getHardwareConcurrency(call[0], call[1]);
+			}
+		};
+		var on_load = function() {
+			embed.postMessage(0);
+		};
+
+		navigator.getHardwareConcurrency = function(callback, options) {
+			calls.push([callback, options]);
+		};
+
+		var listener_div = document.createElementNS(HTML, "div");
+		listener_div.addEventListener("load", on_load, true);
+		listener_div.addEventListener("message", on_message, true);
+		listener_div.addEventListener("error", log_error, true);
+		listener_div.addEventListener("crash", log_error, true);
+
+		var embed = document.createElementNS(HTML, "embed");
+		embed.setAttribute("path", path + "nacl_module/pnacl/Release");
+		embed.setAttribute("src", path + "nacl_module/pnacl/Release/cores.nmf");
+		embed.setAttribute("type", "application/x-pnacl");
+
+		listener_div.appendChild(embed);
+		document.documentElement.appendChild(listener_div);
+
+		return;
+	}
+
 	// Set up performance testing function
 	var performance = self.performance || Date;
 	if (!performance.now) {
@@ -29,18 +82,14 @@
 		}
 	}
 
-	// Get the location of the currently running script
-	var path = (document.currentScript || document.scripts[document.scripts.length-1]).src;
-
 	// Path to workload.js is derived from the path of the running script.
-	var workload = path.replace(/\/[^\/]+$/, "/workload.js");
+	var workload = path + "workload.js";
 
-	var dom_implemented = !!navigator.cores;
 	var previously_run = false;
 
-	// Set navigator.cores to a sane value before getCores is ever run
+	// Set navigator.hardwareConcurrency to a sane value before getHardwareConcurrency is ever run
 	if (!dom_implemented) {
-		/** @expose */ navigator.cores = 1;
+		/** @expose */ navigator.hardwareConcurrency = 1;
 		if (typeof Worker === "undefined") {
 			// Web workers not supported, effectively single-core
 			dom_implemented = true;
@@ -48,22 +97,22 @@
 	}
 
 	/**
-	 * navigator.getCores(callback)
+	 * navigator.getHardwareConcurrency(callback)
 	 *
 	 * Performs the statistical test to determine the correct number of cores
 	 * and calls its callback with the core number as its argument.
 	 *
 	 * @expose
 	 **/
-	navigator.getCores = function(_continue, options) {
+	navigator.getHardwareConcurrency = function(callback, options) {
 		options = options || {};
 		if (!('use_cache' in options)) {
-			options['use_cache'] = true;
+			options.use_cache = true;
 		}
 
 		// If we already have an answer, return early.
-		if (dom_implemented || (options['use_cache'] && previously_run)) {
-			_continue(navigator.cores);
+		if (dom_implemented || (options.use_cache && previously_run)) {
+			callback(navigator.hardwareConcurrency);
 			return;
 		}
 
@@ -104,11 +153,11 @@
 			}
 
 			// We found an estimate
-			navigator.cores = cores;
+			navigator.hardwareConcurrency = cores;
 			previously_run = true;
-			_continue(cores);
+			callback(cores);
 
-		}, options['progress']);
+		}, options.progress);
 	}
 
 	/**
@@ -119,7 +168,7 @@
 	 * to run all the workers simultaneously.
 	 *
 	 **/
-	function measure(workers, worker_size, sample_size, _continue) {
+	function measure(workers, worker_size, sample_size, callback) {
 		var samples = [];
 
 		// Guarantee that we have enough workers
@@ -140,7 +189,7 @@
 						if (sample_size) {
 							_repeat();
 						} else {
-							_continue(samples);
+							callback(samples);
 						}
 					}
 				}
