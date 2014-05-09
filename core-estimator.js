@@ -1,6 +1,7 @@
 /*
  * Core Estimator
  * CPU core estimation timing attack using web workers
+ * A polyfill for navigator.hardwareConcurrency
  * 2014-05-08
  * 
  * Copyright ΩF:∅ Working Group contributors
@@ -19,6 +20,8 @@
 	// A workload of 0x2000000 with 15-20 samples should give you medium-high accuracy
 	// at 6-8x the default runtime. Not suggested in production webapps!
 
+	var dom_implemented = navigator.hardwareConcurrency;
+
 	// Get the path of the currently running script
 	var path = (document.currentScript || document.scripts[document.scripts.length-1]).src
 		.replace(/\/[^\/]+$/, "/");
@@ -30,10 +33,10 @@
 		var calls = [];
 		var pnacl_finished;
 		var on_message = function(event) {
-			var cores = navigator.cores = event.data;
+			var cores = navigator.hardwareConcurrency = event.data;
 			var call;
 
-			navigator.getCores = function(callback, options) {
+			navigator.getHardwareConcurrency = function(callback, options) {
 				callback(cores);
 				if (options.progress) {
 					options.progress(cores, cores, cores);
@@ -41,14 +44,14 @@
 			};
 
 			while (call = calls.shift()) {
-				navigator.getCores(call[0], call[1]);
+				navigator.getHardwareConcurrency(call[0], call[1]);
 			}
 		};
 		var on_load = function() {
 			embed.postMessage(0);
 		};
 
-		navigator.getCores = function(callback, options) {
+		navigator.getHardwareConcurrency = function(callback, options) {
 			calls.push([callback, options]);
 		};
 
@@ -82,12 +85,11 @@
 	// Path to workload.js is derived from the path of the running script.
 	var workload = path + "workload.js";
 
-	var dom_implemented = navigator.cores;
 	var previously_run = false;
 
-	// Set navigator.cores to a sane value before getCores is ever run
+	// Set navigator.hardwareConcurrency to a sane value before getHardwareConcurrency is ever run
 	if (!dom_implemented) {
-		/** @expose */ navigator.cores = 1;
+		/** @expose */ navigator.hardwareConcurrency = 1;
 		if (typeof Worker === "undefined") {
 			// Web workers not supported, effectively single-core
 			dom_implemented = true;
@@ -95,14 +97,14 @@
 	}
 
 	/**
-	 * navigator.getCores(callback)
+	 * navigator.getHardwareConcurrency(callback)
 	 *
 	 * Performs the statistical test to determine the correct number of cores
 	 * and calls its callback with the core number as its argument.
 	 *
 	 * @expose
 	 **/
-	navigator.getCores = function(callback, options) {
+	navigator.getHardwareConcurrency = function(callback, options) {
 		options = options || {};
 		if (!('use_cache' in options)) {
 			options.use_cache = true;
@@ -110,7 +112,7 @@
 
 		// If we already have an answer, return early.
 		if (dom_implemented || (options.use_cache && previously_run)) {
-			callback(navigator.cores);
+			callback(navigator.hardwareConcurrency);
 			return;
 		}
 
@@ -151,7 +153,7 @@
 			}
 
 			// We found an estimate
-			navigator.cores = cores;
+			navigator.hardwareConcurrency = cores;
 			previously_run = true;
 			callback(cores);
 
