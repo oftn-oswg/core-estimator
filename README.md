@@ -15,7 +15,7 @@ Core Estimator only provides an estimate of the number of cores on your machine.
 Using Core Estimator
 --------------------
 
-To install, place `core-estimator.js` and `workload.js` in the same public directory. Relative to `core-estimator.js`, 
+To install, place `core-estimator.js`, `workload.js`, and the `nacl_module` folder in the same public directory. Relative to `core-estimator.js`, 
 
 Include `<script src="/path/to/core-estimator.js"></script>` in the pages you wish to use the Core Estimator API.
 
