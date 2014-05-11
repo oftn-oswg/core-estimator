@@ -43,5 +43,5 @@ API
 	<dt>void navigator.getHardwareConcurrency(function callback(cores))<dt>
 	<dd>Estimates the number of cores and passes the estimate to the callback. If <code>navigator.hardwareConcurrency</code> is is already available (either native API or it was previously estimated), it immediately calls the callback.</dd>
 	<dt>int navigator.hardwareConcurrency<dt>
-	<dd>Either the number of logical or physical CPU cores the user's device has. Which it is depends on if estimation is used. If the browser does not natively support navigator.cores, this will only be available after running navigator.getHardwareConcurrency() once.</dd>
+	<dd>Either the number of logical or physical CPU cores the user's device has. Which it is depends on if estimation is used. If the browser does not natively support navigator.hardwareConcurrency, this will only be available after running navigator.getHardwareConcurrency() once.</dd>
 </dl>
