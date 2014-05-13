@@ -38,7 +38,7 @@
 
 			navigator.getHardwareConcurrency = function(callback, options) {
 				callback(cores);
-				if (options.progress) {
+				if (options && options.progress) {
 					options.progress(cores, cores, cores);
 				}
 			};
