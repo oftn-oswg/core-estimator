@@ -12,6 +12,18 @@ The estimator works by performing a statistical test on running different number
 Core Estimator only provides an estimate of the number of cores on your machine. The value may fluctuate depending on the system load caused by other programs currently running.
 
 
+API
+---
+
+<dl>
+	<dt>void navigator.getHardwareConcurrency(function callback(cores))<dt>
+	<dd>Estimates the number of cores and passes the estimate to the callback. If <code>navigator.hardwareConcurrency</code> is is already available (either native API or it was previously estimated), it immediately calls the callback.</dd>
+	<dt>int navigator.hardwareConcurrency<dt>
+	<dd>Either the number of logical or physical CPU cores the user's device has. Which it is depends on if estimation is used. If the browser does not natively support navigator.hardwareConcurrency, this will only be available after running navigator.getHardwareConcurrency() once.</dd>
+</dl>
+
+
+
 Using Core Estimator
 --------------------
 
@@ -34,14 +46,3 @@ Forward compatibility
 ---------------------
 
 In the future, when browser vendors implement `navigator.hardwareConcurrency` natively, Core Estimator will automatically detect and use the native method instead of estimating the number of cores.
-
-
-API
----
-
-<dl>
-	<dt>void navigator.getHardwareConcurrency(function callback(cores))<dt>
-	<dd>Estimates the number of cores and passes the estimate to the callback. If <code>navigator.hardwareConcurrency</code> is is already available (either native API or it was previously estimated), it immediately calls the callback.</dd>
-	<dt>int navigator.hardwareConcurrency<dt>
-	<dd>Either the number of logical or physical CPU cores the user's device has. Which it is depends on if estimation is used. If the browser does not natively support navigator.hardwareConcurrency, this will only be available after running navigator.getHardwareConcurrency() once.</dd>
-</dl>
