@@ -2,7 +2,7 @@
  * Core Estimator
  * CPU core estimation timing attack using web workers
  * A polyfill for navigator.hardwareConcurrency
- * 2014-05-08
+ * 2014-05-27
  * 
  * Copyright ΩF:∅ Working Group contributors
  * License: X11/MIT
@@ -13,7 +13,7 @@
 
 "use strict";
 
-(function() {
+(function(view) {
 	// Configuration (default: medium accuracy)
 	var SAMPLES = 20;
 	var WORKLOAD = 0x400000;
@@ -21,9 +21,10 @@
 	// at 6-8x the default runtime. Not suggested in production webapps!
 
 	var dom_implemented = navigator.hardwareConcurrency;
+	var doc = document;
 
 	// Get the path of the currently running script
-	var path = (document.currentScript || document.scripts[document.scripts.length-1]).src
+	var path = (doc.currentScript || doc.scripts[doc.scripts.length-1]).src
 		.replace(/\/[^\/]+$/, "/");
 
 	// Use PNaCl in Chrome
@@ -31,7 +32,7 @@
 		var HTML = "http://www.w3.org/1999/xhtml";
 		var log_error = console.error.bind(console);
 		var calls = [];
-		var pnacl_finished;
+
 		var on_message = function(event) {
 			var cores = navigator.hardwareConcurrency = event.data;
 			var call;
@@ -46,7 +47,15 @@
 			while (call = calls.shift()) {
 				navigator.getHardwareConcurrency(call[0], call[1]);
 			}
+
+			// Cleanup
+			listener_div.removeEventListener("load", on_load, true);
+			listener_div.removeEventListener("message", on_message, true);
+			listener_div.removeEventListener("error", log_error, true);
+			listener_div.removeEventListener("crash", log_error, true);
+			doc.documentElement.removeChild(listener_div);
 		};
+
 		var on_load = function() {
 			embed.postMessage(0);
 		};
@@ -55,25 +64,25 @@
 			calls.push([callback, options]);
 		};
 
-		var listener_div = document.createElementNS(HTML, "div");
+		var listener_div = doc.createElementNS(HTML, "div");
 		listener_div.addEventListener("load", on_load, true);
 		listener_div.addEventListener("message", on_message, true);
 		listener_div.addEventListener("error", log_error, true);
 		listener_div.addEventListener("crash", log_error, true);
 
-		var embed = document.createElementNS(HTML, "embed");
+		var embed = doc.createElementNS(HTML, "embed");
 		embed.setAttribute("path", path + "nacl_module/pnacl/Release");
 		embed.setAttribute("src", path + "nacl_module/pnacl/Release/cores.nmf");
 		embed.setAttribute("type", "application/x-pnacl");
 
 		listener_div.appendChild(embed);
-		document.documentElement.appendChild(listener_div);
+		doc.documentElement.appendChild(listener_div);
 
 		return;
 	}
 
 	// Set up performance testing function
-	var performance = self.performance || Date;
+	var performance = view.performance || Date;
 	if (!performance.now) {
 		if (performance.webkitNow) {
 			performance.now = performance.webkitNow;
@@ -116,6 +125,8 @@
 			return;
 		}
 
+		doc.documentElement.style.cursor = "progress";
+
 		var workers = []; // An array of workers ready to run the payload
 
 		var worker_size = 1;
@@ -153,6 +164,7 @@
 			}
 
 			// We found an estimate
+			doc.documentElement.style.cursor = "";
 			navigator.hardwareConcurrency = cores;
 			previously_run = true;
 			callback(cores);
@@ -361,4 +373,4 @@
 	}
 
 	function linear(a, b, t) { return a + (b - a) * t; }
-}());
+}(self));
