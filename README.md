@@ -39,7 +39,7 @@ Supported browsers
 * Chrome (Native support)
 * Safari
 * Internet Explorer 10+
-* Opera (Blink)
+* Opera
 
 
 Forward compatibility
