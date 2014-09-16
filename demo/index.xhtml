@@ -3,7 +3,7 @@
 <head>
 <title>navigator.hardwareConcurrency polyfill</title>
 <style>
-
+<![CDATA[
 body {
 	font: 16px Helvetica, Arial, Sans-Serif;
 	margin: 0;
@@ -163,7 +163,7 @@ a:active { color: rgb(177,181,185); }
 #info {
 	font-style: italic;
 }
-
+]]>
 </style>
 </head>
 <body>
@@ -171,14 +171,14 @@ a:active { color: rgb(177,181,185); }
 <div id="cont">
 <h1>Core Estimator: a <a href="http://wiki.whatwg.org/wiki/Navigator_HW_Concurrency">navigator.hardwareConcurrency</a> polyfill</h1>
 <p>Core Estimator implements the <a href="https://github.com/oftn/core-estimator#api">navigator.hardwareConcurrency API</a> that helps you scale highly parallel algorithms in JS.</p>
-<p>See our <a href="http://blog.wg.oftn.org/post/51125082905/core-estimator">blog post</a> or <a href="https://github.com/oftn/core-estimator/blob/master/core-estimator.js">read the code</a> for more details on how it works.</p>
+<p>See our <a href="http://eligrey.com/blog/post/cpu-core-estimation-with-javascript/">blog post</a> or <a href="https://github.com/oftn/core-estimator/blob/master/core-estimator.js">read the code</a> for more details on how it works.</p>
 <a href="#" onclick="run(this); return false;" class="btn btn-large" id="button">Begin</a>
 <div id="core-list-cont"></div>
 <p id="info"></p>
 </div>
 
 <script type="application/javascript">
-
+<![CDATA[
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-20491376-1']);
 _gaq.push(['_trackPageview']);
@@ -190,13 +190,13 @@ _gaq.push(['_trackPageview']);
 })();
 
 var dom_implemented = navigator.hardwareConcurrency;
-
+]]>
 </script>
 
-<script type="application/javascript" src="../core-estimator.min.js"></script>
+<script type="application/javascript" src="../core-estimator.min.js"/>
 
 <script type="application/javascript">
-
+<![CDATA[
 var CoreList = (function() {
 	"use strict";
 
@@ -327,7 +327,7 @@ function run(btn) {
 if (dom_implemented || navigator.mimeTypes["application/x-pnacl"]) {
 	run(document.getElementById("button"));
 }
-
+]]>
 </script>
 
 </body>
