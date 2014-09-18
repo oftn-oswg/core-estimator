@@ -37,9 +37,9 @@ Supported browsers
 
 * Firefox
 * Chrome (Native support)
-* Safari
+* Safari (Native support soon)
 * Internet Explorer 10+
-* Opera
+* Opera (Native support)
 
 
 Forward compatibility
