@@ -40,6 +40,7 @@ Supported browsers
 * Safari (Native support soon)
 * Internet Explorer 10+
 * Opera (Native support)
+* Edge
 
 
 Forward compatibility
