@@ -5,7 +5,7 @@
  * 2014-05-27
  * 
  * Copyright ΩF:∅ Working Group contributors
- * License: X11/MIT
+ * License: MIT
  *   See LICENSE.md
  */
 
