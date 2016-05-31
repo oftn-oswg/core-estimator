@@ -36,10 +36,11 @@ Supported browsers
 ------------------
 
 * Firefox
-* Chrome (Native support)
-* Safari (Native support soon)
+* Firefox 48 (Native)
+* Chrome (Native)
+* Safari (Native)
 * Internet Explorer 10+
-* Opera (Native support)
+* Opera (Native)
 * Edge
 
 
