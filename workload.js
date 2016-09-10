@@ -13,5 +13,6 @@ self.onmessage = function(event) {
 		d = (a ^ d) << 1;
 	}
 
-	postMessage(null);
+	// Pass information back to thwart optimizers.
+	postMessage(a);
 };
